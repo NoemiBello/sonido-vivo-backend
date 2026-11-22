@@ -1,11 +1,13 @@
+
 package cl.sonidovivo.publicacionesservice.service;
 
+import cl.sonidovivo.publicacionesservice.dto.PublicacionRequest;
+import cl.sonidovivo.publicacionesservice.dto.PublicacionResponse;
 import cl.sonidovivo.publicacionesservice.model.Publicacion;
 import cl.sonidovivo.publicacionesservice.repository.PublicacionRepository;
 import cl.sonidovivo.publicacionesservice.exception.RecursoNoEncontradoException;
 
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -18,40 +20,66 @@ public class PublicacionService {
     }
 
     // LISTAR PUBLICACIONES
-    public List<Publicacion> listar() {
-        return publicacionRepository.findAll();
+    public List<PublicacionResponse> listar() {
+        return publicacionRepository.findAll()
+                .stream()
+                .map(this::convertirAResponse)
+                .toList();
     }
 
     // BUSCAR PUBLICACION POR ID
-    public Publicacion buscarPorId(Long id) {
+    public PublicacionResponse buscarPorId(Long id) {
+        return convertirAResponse(buscarEntidadPorId(id));
+    }
+
+    // CREAR PUBLICACION
+    public PublicacionResponse crear(PublicacionRequest request) {
+
+        Publicacion publicacion = new Publicacion();
+
+        publicacion.setTitulo(request.titulo());
+        publicacion.setResumen(request.resumen());
+        publicacion.setContenido(request.contenido());
+        publicacion.setFecha(request.fecha());
+        publicacion.setAutor(request.autor());
+
+        return convertirAResponse(publicacionRepository.save(publicacion));
+    }
+
+    // ACTUALIZAR PUBLICACION
+    public PublicacionResponse actualizar(Long id, PublicacionRequest request) {
+
+        Publicacion existente = buscarEntidadPorId(id);
+
+        existente.setTitulo(request.titulo());
+        existente.setResumen(request.resumen());
+        existente.setContenido(request.contenido());
+        existente.setFecha(request.fecha());
+        existente.setAutor(request.autor());
+
+        return convertirAResponse(publicacionRepository.save(existente));
+    }
+
+    // ELIMINAR PUBLICACION
+    public void eliminar(Long id) {
+        Publicacion existente = buscarEntidadPorId(id);
+        publicacionRepository.delete(existente);
+    }
+
+    private Publicacion buscarEntidadPorId(Long id) {
         return publicacionRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "Publicacion no encontrada con ID: " + id));
     }
 
-    // CREAR PUBLICACION
-    public Publicacion crear(Publicacion publicacion) {
-        publicacion.setId(null);
-        return publicacionRepository.save(publicacion);
-    }
-
-    // ACTUALIZAR PUBLICACION
-    public Publicacion actualizar(Long id, Publicacion publicacion) {
-
-        Publicacion existente = buscarPorId(id);
-
-        existente.setTitulo(publicacion.getTitulo());
-        existente.setResumen(publicacion.getResumen());
-        existente.setContenido(publicacion.getContenido());
-        existente.setFecha(publicacion.getFecha());
-        existente.setAutor(publicacion.getAutor());
-
-        return publicacionRepository.save(existente);
-    }
-
-    // ELIMINAR PUBLICACION
-    public void eliminar(Long id) {
-        Publicacion existente = buscarPorId(id);
-        publicacionRepository.delete(existente);
+    private PublicacionResponse convertirAResponse(Publicacion publicacion) {
+        return new PublicacionResponse(
+                publicacion.getId(),
+                publicacion.getTitulo(),
+                publicacion.getResumen(),
+                publicacion.getContenido(),
+                publicacion.getFecha(),
+                publicacion.getAutor()
+        );
     }
 }

@@ -1,10 +1,11 @@
+
 package cl.sonidovivo.publicacionesservice.controller;
 
-import cl.sonidovivo.publicacionesservice.model.Publicacion;
+import cl.sonidovivo.publicacionesservice.dto.PublicacionRequest;
+import cl.sonidovivo.publicacionesservice.dto.PublicacionResponse;
 import cl.sonidovivo.publicacionesservice.service.PublicacionService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -25,38 +26,36 @@ public class PublicacionController {
 
     // LISTAR PUBLICACIONES
     @GetMapping
-    public ResponseEntity<List<Publicacion>> listar() {
+    public ResponseEntity<List<PublicacionResponse>> listar() {
         return ResponseEntity.ok(publicacionService.listar());
     }
 
     // BUSCAR PUBLICACION POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<Publicacion> buscarPorId(
+    public ResponseEntity<PublicacionResponse> buscarPorId(
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(
-                publicacionService.buscarPorId(id));
+        return ResponseEntity.ok(publicacionService.buscarPorId(id));
     }
 
     // CREAR PUBLICACION
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
-    public ResponseEntity<Publicacion> crear(
-            @Valid @RequestBody Publicacion publicacion) {
+    public ResponseEntity<PublicacionResponse> crear(
+            @Valid @RequestBody PublicacionRequest request) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(publicacionService.crear(publicacion));
+                .body(publicacionService.crear(request));
     }
 
     // ACTUALIZAR PUBLICACION
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
-    public ResponseEntity<Publicacion> actualizar(
+    public ResponseEntity<PublicacionResponse> actualizar(
             @PathVariable Long id,
-            @Valid @RequestBody Publicacion publicacion) {
+            @Valid @RequestBody PublicacionRequest request) {
 
-        return ResponseEntity.ok(
-                publicacionService.actualizar(id, publicacion));
+        return ResponseEntity.ok(publicacionService.actualizar(id, request));
     }
 
     // ELIMINAR PUBLICACION
