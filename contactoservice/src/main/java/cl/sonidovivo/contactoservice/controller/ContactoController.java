@@ -1,12 +1,16 @@
+
 package cl.sonidovivo.contactoservice.controller;
 
-import cl.sonidovivo.contactoservice.model.Contacto;
+import cl.sonidovivo.contactoservice.dto.ContactoRequest;
+import cl.sonidovivo.contactoservice.dto.ContactoResponse;
 import cl.sonidovivo.contactoservice.service.ContactoService;
 
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
@@ -21,40 +25,50 @@ public class ContactoController {
         this.service = service;
     }
 
+    // LISTAR CONTACTOS
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
-    public ResponseEntity<List<Contacto>> listar() {
+    public ResponseEntity<List<ContactoResponse>> listar() {
         return ResponseEntity.ok(service.listar());
     }
 
+    // BUSCAR CONTACTO POR ID
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{id}")
-    public ResponseEntity<Contacto> buscarPorId(
+    public ResponseEntity<ContactoResponse> buscarPorId(
             @PathVariable Long id) {
+
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
+    // CREAR CONTACTO
     @PostMapping
-    public ResponseEntity<Contacto> crear(
-            @Valid @RequestBody Contacto contacto) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(service.crear(contacto));
+    public ResponseEntity<ContactoResponse> crear(
+            @Valid @RequestBody ContactoRequest request) {
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(service.crear(request));
     }
 
+    // ACTUALIZAR CONTACTO
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
-    public ResponseEntity<Contacto> actualizar(
+    public ResponseEntity<ContactoResponse> actualizar(
             @PathVariable Long id,
-            @Valid @RequestBody Contacto contacto) {
-        return ResponseEntity.ok(
-                service.actualizar(id, contacto));
+            @Valid @RequestBody ContactoRequest request) {
+
+        return ResponseEntity.ok(service.actualizar(id, request));
     }
 
+    // ELIMINAR CONTACTO
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(
             @PathVariable Long id) {
+
         service.eliminar(id);
+
         return ResponseEntity.noContent().build();
     }
 }
