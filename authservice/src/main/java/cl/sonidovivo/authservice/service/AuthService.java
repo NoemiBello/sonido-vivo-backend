@@ -5,6 +5,7 @@ import cl.sonidovivo.authservice.exception.DatosInvalidosException;
 import cl.sonidovivo.authservice.model.Usuario;
 import cl.sonidovivo.authservice.repository.UsuarioRepository;
 import cl.sonidovivo.authservice.security.JwtService;
+import io.jsonwebtoken.Claims;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,19 @@ public class AuthService {
     usuario.setRol("USER");
     usuario.setActivo(true);
     usuarios.save(usuario);
+    return new LoginResponse(jwt.generar(usuario),
+      usuario.getCorreo(), usuario.getRol());
+  }
+
+  // Renovación: el token recibido debe ser válido (firma, emisor y expiración).
+  // Si lo es, y la cuenta sigue activa, se emite un token nuevo con el rol actual.
+  public LoginResponse renovar(RefreshRequest request) {
+    Claims claims = jwt.validar(request.token());
+    Usuario usuario = usuarios.findByCorreoIgnoreCase(claims.getSubject())
+      .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
+    if (!usuario.isActivo()) {
+      throw new BadCredentialsException("Credenciales inválidas");
+    }
     return new LoginResponse(jwt.generar(usuario),
       usuario.getCorreo(), usuario.getRol());
   }

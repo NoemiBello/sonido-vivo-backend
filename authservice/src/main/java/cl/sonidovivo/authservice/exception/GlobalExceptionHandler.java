@@ -1,5 +1,6 @@
 package cl.sonidovivo.authservice.exception;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +24,13 @@ public class GlobalExceptionHandler {
   ResponseEntity<Map<String, String>> credencialesInvalidas() {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
       .body(Map.of("error", "Credenciales inválidas"));
+  }
+
+  // Token alterado, vencido o de otro emisor al intentar renovarlo
+  @ExceptionHandler(JwtException.class)
+  ResponseEntity<Map<String, String>> tokenInvalido() {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+      .body(Map.of("error", "Token inválido o expirado"));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)

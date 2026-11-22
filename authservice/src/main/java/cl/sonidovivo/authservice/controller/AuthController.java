@@ -22,4 +22,9 @@ public class AuthController {
   public ResponseEntity<LoginResponse> registrar(@Valid @RequestBody RegistroRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(auth.registrar(request));
   }
+
+  @PostMapping("/refresh")
+  public LoginResponse renovar(@Valid @RequestBody RefreshRequest request) {
+    return auth.renovar(request);
+  }
 }
