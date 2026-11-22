@@ -1,6 +1,7 @@
 package cl.sonidovivo.authservice.service;
 
 import cl.sonidovivo.authservice.dto.*;
+import cl.sonidovivo.authservice.exception.DatosInvalidosException;
 import cl.sonidovivo.authservice.model.Usuario;
 import cl.sonidovivo.authservice.repository.UsuarioRepository;
 import cl.sonidovivo.authservice.security.JwtService;
@@ -29,6 +30,25 @@ public class AuthService {
     if (!usuario.isActivo() || !encoder.matches(request.password(), usuario.getPassword())) {
       throw new BadCredentialsException("Credenciales inválidas");
     }
+    return new LoginResponse(jwt.generar(usuario),
+      usuario.getCorreo(), usuario.getRol());
+  }
+
+  // Registro público desde la tienda: siempre crea un cliente (USER)
+  // y devuelve el token para que React quede con la sesión iniciada.
+  public LoginResponse registrar(RegistroRequest request) {
+    if (usuarios.findByCorreoIgnoreCase(request.correo()).isPresent()) {
+      throw new DatosInvalidosException("El correo ya está registrado");
+    }
+    if (request.password().length() < 6) {
+      throw new DatosInvalidosException("La contraseña debe tener al menos 6 caracteres");
+    }
+    Usuario usuario = new Usuario();
+    usuario.setCorreo(request.correo().trim().toLowerCase());
+    usuario.setPassword(encoder.encode(request.password()));
+    usuario.setRol("USER");
+    usuario.setActivo(true);
+    usuarios.save(usuario);
     return new LoginResponse(jwt.generar(usuario),
       usuario.getCorreo(), usuario.getRol());
   }

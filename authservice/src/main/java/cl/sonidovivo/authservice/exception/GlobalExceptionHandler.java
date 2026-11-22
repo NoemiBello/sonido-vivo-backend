@@ -14,6 +14,11 @@ public class GlobalExceptionHandler {
       .body(Map.of("error", e.getMessage()));
   }
 
+  @ExceptionHandler(DatosInvalidosException.class)
+  ResponseEntity<Map<String, String>> reglaIncumplida(DatosInvalidosException e) {
+    return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+  }
+
   @ExceptionHandler(BadCredentialsException.class)
   ResponseEntity<Map<String, String>> credencialesInvalidas() {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
