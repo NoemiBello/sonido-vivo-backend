@@ -1,5 +1,6 @@
 package cl.sonidovivo.serviciostecnicosservice.controller;
 
+import cl.sonidovivo.serviciostecnicosservice.dto.CambioEstadoRequest;
 import cl.sonidovivo.serviciostecnicosservice.model.SolicitudServicio;
 import cl.sonidovivo.serviciostecnicosservice.service.SolicitudServicioService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,5 +36,11 @@ public class SolicitudServicioController {
     @PostMapping
     public ResponseEntity<SolicitudServicio> crear(@Valid @RequestBody SolicitudServicio solicitud) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.crear(solicitud));
+    }
+
+    @PutMapping("/{id}/estado")
+    public SolicitudServicio cambiarEstado(@PathVariable Long id,
+        @Valid @RequestBody CambioEstadoRequest request) {
+        return service.cambiarEstado(id, request);
     }
 }

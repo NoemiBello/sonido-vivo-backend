@@ -1,5 +1,6 @@
 package cl.sonidovivo.serviciostecnicosservice.service;
 
+import cl.sonidovivo.serviciostecnicosservice.dto.CambioEstadoRequest;
 import cl.sonidovivo.serviciostecnicosservice.exception.DatosInvalidosException;
 import cl.sonidovivo.serviciostecnicosservice.exception.RecursoNoEncontradoException;
 import cl.sonidovivo.serviciostecnicosservice.model.SolicitudServicio;
@@ -13,6 +14,11 @@ public class SolicitudServicioService {
     // Instrumentos que la tienda repara (los del formulario de la página Servicios).
     private static final String[] INSTRUMENTOS = {
         "guitarra-electrica", "guitarra-acustica", "bajo", "otro"
+    };
+
+    // Etapas de la reparación, en orden. Una solicitud solo avanza a la siguiente.
+    private static final String[] ESTADOS = {
+        "PENDIENTE", "EN_REVISION", "EN_REPARACION", "LISTO", "ENTREGADO"
     };
 
     private final SolicitudServicioRepository repository;
@@ -43,6 +49,39 @@ public class SolicitudServicioService {
         solicitud.setEstado("PENDIENTE");
         solicitud.setFechaSolicitud(LocalDate.now());
         return repository.save(solicitud);
+    }
+
+    // Regla de negocio: el estado avanza paso a paso y no retrocede.
+    // ENTREGADO es el estado final.
+    public SolicitudServicio cambiarEstado(Long id, CambioEstadoRequest request) {
+        SolicitudServicio solicitud = buscar(id);
+        String nuevo = request.estado().trim().toUpperCase();
+
+        int posicionActual = posicionDe(solicitud.getEstado());
+        int posicionNueva = posicionDe(nuevo);
+
+        if (posicionNueva == -1) {
+            throw new DatosInvalidosException(
+                "Estado no válido: use PENDIENTE, EN_REVISION, EN_REPARACION, LISTO o ENTREGADO");
+        }
+        if (posicionActual == ESTADOS.length - 1) {
+            throw new DatosInvalidosException("La solicitud ya fue entregada");
+        }
+        if (posicionNueva != posicionActual + 1) {
+            throw new DatosInvalidosException(
+                "Desde " + solicitud.getEstado() + " solo se puede pasar a " + ESTADOS[posicionActual + 1]);
+        }
+        solicitud.setEstado(nuevo);
+        return repository.save(solicitud);
+    }
+
+    private int posicionDe(String estado) {
+        for (int i = 0; i < ESTADOS.length; i++) {
+            if (ESTADOS[i].equals(estado)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void validarInstrumento(String instrumento) {
