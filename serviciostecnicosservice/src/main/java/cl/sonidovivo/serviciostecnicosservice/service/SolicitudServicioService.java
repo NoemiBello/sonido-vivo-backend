@@ -51,6 +51,23 @@ public class SolicitudServicioService {
         return repository.save(solicitud);
     }
 
+    // Corrige los datos de contacto o del instrumento.
+    // El estado y la fecha no se cambian aquí: el estado tiene su propio flujo.
+    public SolicitudServicio actualizar(Long id, SolicitudServicio datos) {
+        validarInstrumento(datos.getInstrumento());
+        SolicitudServicio actual = buscar(id);
+        actual.setNombre(datos.getNombre());
+        actual.setCorreo(datos.getCorreo().trim().toLowerCase());
+        actual.setTelefono(datos.getTelefono());
+        actual.setInstrumento(datos.getInstrumento());
+        actual.setDescripcion(datos.getDescripcion());
+        return repository.save(actual);
+    }
+
+    public void eliminar(Long id) {
+        repository.delete(buscar(id));
+    }
+
     // Regla de negocio: el estado avanza paso a paso y no retrocede.
     // ENTREGADO es el estado final.
     public SolicitudServicio cambiarEstado(Long id, CambioEstadoRequest request) {
