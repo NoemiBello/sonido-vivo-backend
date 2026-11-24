@@ -299,9 +299,9 @@ Las siguientes rutas representan los contratos previstos de integración, sujeto
 
 | Microservicio | Ruta base |
 |---|---|
-| Auth | `/api/auth` |
-| Usuarios | `/api/usuarios` |
-| Servicios Técnicos | `/api/servicios-tecnicos` |
+| Auth | `/api/v1/auth` |
+| Usuarios | `/api/v1/usuarios` |
+| Servicios Técnicos | `/api/v1/servicios-tecnicos` |
 | Productos | `/api/productos` |
 | Categorías | `/api/categorias` |
 | Inventario | `/api/inventario` |
@@ -313,39 +313,49 @@ Las siguientes rutas representan los contratos previstos de integración, sujeto
 
 Responsable de la autenticación y seguridad de los usuarios.
 
-Funcionalidades previstas:
+#### Endpoints implementados
 
-- Inicio de sesión.
-- Validación de credenciales.
-- Generación de tokens JWT.
-- Renovación segura de tokens.
-- Identificación de roles y permisos.
-- Gestión de expiración de tokens.
-- Protección de recursos privados.
+| Método | Endpoint | Acceso | Respuesta |
+|---|---|---|---|
+| POST | `/api/v1/auth/login` | Público | 200 OK |
+| POST | `/api/v1/auth/registro` | Público | 201 Created |
+| POST | `/api/v1/auth/refresh` | Público, con token vigente en el cuerpo | 200 OK |
+| GET | `/api/v1/auth/usuarios` | ADMIN | 200 OK |
+| GET | `/api/v1/auth/usuarios/{id}` | ADMIN | 200 OK |
+| POST | `/api/v1/auth/usuarios` | ADMIN | 201 Created |
+| PUT | `/api/v1/auth/usuarios/{id}` | ADMIN | 200 OK |
+| DELETE | `/api/v1/auth/usuarios/{id}` | ADMIN (desactiva la cuenta) | 204 No Content |
 
 ### 7.2. Usuarios Service
 
 Responsable de la administración de usuarios de la plataforma.
 
-Funcionalidades previstas:
+#### Endpoints implementados
 
-- Registro de usuarios.
-- Consulta de perfiles.
-- Actualización de información personal.
-- Administración de cuentas.
-- Gestión de roles y estados de usuario.
+| Método | Endpoint | Acceso | Respuesta |
+|---|---|---|---|
+| GET | `/api/v1/usuarios/correo/{correo}` | Con token | 200 OK |
+| POST | `/api/v1/usuarios` | Con token | 201 Created |
+| PUT | `/api/v1/usuarios/{id}` | Con token | 200 OK |
+| GET | `/api/v1/usuarios` | ADMIN | 200 OK |
+| GET | `/api/v1/usuarios/{id}` | ADMIN | 200 OK |
+| DELETE | `/api/v1/usuarios/{id}` | ADMIN | 204 No Content |
 
 ### 7.3. Servicios Técnicos Service
 
 Responsable de gestionar las solicitudes de asistencia técnica relacionadas con instrumentos musicales.
 
-Funcionalidades previstas:
+#### Endpoints implementados
 
-- Registro de solicitudes.
-- Consulta de solicitudes.
-- Actualización de información.
-- Seguimiento del estado de atención.
-- Administración de servicios técnicos.
+| Método | Endpoint | Acceso | Respuesta |
+|---|---|---|---|
+| POST | `/api/v1/servicios-tecnicos` | Público | 201 Created |
+| GET | `/api/v1/servicios-tecnicos/correo/{correo}` | Con token | 200 OK |
+| GET | `/api/v1/servicios-tecnicos` | ADMIN | 200 OK |
+| GET | `/api/v1/servicios-tecnicos/{id}` | ADMIN | 200 OK |
+| PUT | `/api/v1/servicios-tecnicos/{id}` | ADMIN | 200 OK |
+| PUT | `/api/v1/servicios-tecnicos/{id}/estado` | ADMIN | 200 OK |
+| DELETE | `/api/v1/servicios-tecnicos/{id}` | ADMIN | 204 No Content |
 
 ### 7.4. Productos Service
 
