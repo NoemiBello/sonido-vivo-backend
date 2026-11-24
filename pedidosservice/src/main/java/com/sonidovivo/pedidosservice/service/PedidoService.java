@@ -1,6 +1,7 @@
 
 package com.sonidovivo.pedidosservice.service;
 
+import com.sonidovivo.pedidosservice.client.ProductosInventarioClient;
 import com.sonidovivo.pedidosservice.dto.*;
 import com.sonidovivo.pedidosservice.exception.RecursoNoEncontradoException;
 import com.sonidovivo.pedidosservice.model.DetallePedido;
@@ -20,280 +21,267 @@ import java.util.Set;
 @Service
 public class PedidoService {
 
-    private final PedidoRepository pedidoRepository;
-    private final ProductosInventarioClient productosInventarioClient;
+        private final PedidoRepository pedidoRepository;
+        private final ProductosInventarioClient productosInventarioClient;
 
-    public PedidoService(
-            PedidoRepository pedidoRepository,
-            ProductosInventarioClient productosInventarioClient) {
+        public PedidoService(
+                        PedidoRepository pedidoRepository,
+                        ProductosInventarioClient productosInventarioClient) {
 
-        this.pedidoRepository = pedidoRepository;
-        this.productosInventarioClient = productosInventarioClient;
-    }
-
-    // CREAR PEDIDO
-    @Transactional
-    public PedidoResponse crearPedido(CrearPedidoRequest request) {
-
-        Pedido pedido = new Pedido();
-
-        pedido.setUsuarioId(request.usuarioId());
-        pedido.setNombreCliente(request.nombreCliente());
-        pedido.setDireccionEntrega(request.direccionEntrega());
-        pedido.setEstado("PENDIENTE");
-
-        BigDecimal total = BigDecimal.ZERO;
-        Set<Long> productosAgregados = new HashSet<>();
-
-        for (DetallePedidoRequest item : request.detalles()) {
-
-            Long productoId = item.productoId();
-            Integer cantidad = item.cantidad();
-
-            if (productoId == null || productoId <= 0) {
-                throw new IllegalArgumentException(
-                        "El ID del producto debe ser mayor que cero."
-                );
-            }
-
-            if (cantidad == null || cantidad <= 0) {
-                throw new IllegalArgumentException(
-                        "La cantidad debe ser mayor que cero."
-                );
-            }
-
-            if (!productosAgregados.add(productoId)) {
-                throw new IllegalArgumentException(
-                        "El producto " + productoId +
-                        " está repetido en el pedido."
-                );
-            }
-
-            ProductoResponse producto =
-                    productosInventarioClient.obtenerProducto(productoId);
-
-            if (!Boolean.TRUE.equals(producto.activo())) {
-                throw new IllegalArgumentException(
-                        "El producto " + productoId + " no está activo."
-                );
-            }
-
-            if (producto.precio() == null ||
-                    producto.precio().compareTo(BigDecimal.ZERO) <= 0) {
-
-                throw new IllegalArgumentException(
-                        "El producto " + productoId +
-                        " no tiene un precio válido."
-                );
-            }
-
-            BigDecimal descuento = producto.descuento() == null
-                    ? BigDecimal.ZERO
-                    : producto.descuento();
-
-            if (descuento.compareTo(BigDecimal.ZERO) < 0 ||
-                    descuento.compareTo(new BigDecimal("100")) > 0) {
-
-                throw new IllegalArgumentException(
-                        "El descuento del producto " + productoId +
-                        " no es válido."
-                );
-            }
-
-            InventarioResponse inventario =
-                    productosInventarioClient.obtenerInventario(productoId);
-
-            if (inventario.stock() == null ||
-                    inventario.stock() < cantidad) {
-
-                throw new IllegalArgumentException(
-                        "No hay stock suficiente para el producto " +
-                        productoId
-                );
-            }
-
-            BigDecimal factorDescuento = BigDecimal.ONE.subtract(
-                    descuento.divide(
-                            new BigDecimal("100"),
-                            6,
-                            RoundingMode.HALF_UP
-                    )
-            );
-
-            BigDecimal precioFinal = producto.precio()
-                    .multiply(factorDescuento)
-                    .setScale(2, RoundingMode.HALF_UP);
-
-            BigDecimal subtotal = precioFinal.multiply(
-                    BigDecimal.valueOf(cantidad)
-            );
-
-            DetallePedido detalle = new DetallePedido();
-
-            detalle.setProductoId(productoId);
-            detalle.setCantidad(cantidad);
-            detalle.setPrecioUnitario(precioFinal);
-            detalle.setSubtotal(subtotal);
-            detalle.setPedido(pedido);
-
-            pedido.getDetalles().add(detalle);
-
-            total = total.add(subtotal);
+                this.pedidoRepository = pedidoRepository;
+                this.productosInventarioClient = productosInventarioClient;
         }
 
-        if (total.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException(
-                    "El total del pedido debe ser mayor que cero."
-            );
+        // CREAR PEDIDO
+        @Transactional
+        public PedidoResponse crearPedido(CrearPedidoRequest request) {
+
+                Pedido pedido = new Pedido();
+
+                pedido.setUsuarioId(request.usuarioId());
+                pedido.setNombreCliente(request.nombreCliente());
+                pedido.setDireccionEntrega(request.direccionEntrega());
+                pedido.setEstado("PENDIENTE");
+
+                BigDecimal total = BigDecimal.ZERO;
+                Set<Long> productosAgregados = new HashSet<>();
+
+                for (DetallePedidoRequest item : request.detalles()) {
+
+                        Long productoId = item.productoId();
+                        Integer cantidad = item.cantidad();
+
+                        if (productoId == null || productoId <= 0) {
+                                throw new IllegalArgumentException(
+                                                "El ID del producto debe ser mayor que cero.");
+                        }
+
+                        if (cantidad == null || cantidad <= 0) {
+                                throw new IllegalArgumentException(
+                                                "La cantidad debe ser mayor que cero.");
+                        }
+
+                        if (!productosAgregados.add(productoId)) {
+                                throw new IllegalArgumentException(
+                                                "El producto " + productoId +
+                                                                " está repetido en el pedido.");
+                        }
+
+                        ProductoResponse producto = productosInventarioClient.obtenerProducto(productoId);
+
+                        if (!Boolean.TRUE.equals(producto.activo())) {
+                                throw new IllegalArgumentException(
+                                                "El producto " + productoId + " no está activo.");
+                        }
+
+                        if (producto.precio() == null ||
+                                        producto.precio().compareTo(BigDecimal.ZERO) <= 0) {
+
+                                throw new IllegalArgumentException(
+                                                "El producto " + productoId +
+                                                                " no tiene un precio válido.");
+                        }
+
+                        BigDecimal descuento = producto.descuento() == null
+                                        ? BigDecimal.ZERO
+                                        : producto.descuento();
+
+                        if (descuento.compareTo(BigDecimal.ZERO) < 0 ||
+                                        descuento.compareTo(new BigDecimal("100")) > 0) {
+
+                                throw new IllegalArgumentException(
+                                                "El descuento del producto " + productoId +
+                                                                " no es válido.");
+                        }
+
+                        InventarioResponse inventario = productosInventarioClient.obtenerInventario(productoId);
+
+                        if (inventario.stock() == null ||
+                                        inventario.stock() < cantidad) {
+
+                                throw new IllegalArgumentException(
+                                                "No hay stock suficiente para el producto " +
+                                                                productoId);
+                        }
+
+                        BigDecimal factorDescuento = BigDecimal.ONE.subtract(
+                                        descuento.divide(
+                                                        new BigDecimal("100"),
+                                                        6,
+                                                        RoundingMode.HALF_UP));
+
+                        BigDecimal precioFinal = producto.precio()
+                                        .multiply(factorDescuento)
+                                        .setScale(2, RoundingMode.HALF_UP);
+
+                        BigDecimal subtotal = precioFinal.multiply(
+                                        BigDecimal.valueOf(cantidad));
+
+                        DetallePedido detalle = new DetallePedido();
+
+                        detalle.setProductoId(productoId);
+                        detalle.setCantidad(cantidad);
+                        detalle.setPrecioUnitario(precioFinal);
+                        detalle.setSubtotal(subtotal);
+                        detalle.setPedido(pedido);
+
+                        pedido.getDetalles().add(detalle);
+
+                        total = total.add(subtotal);
+                }
+
+                if (total.compareTo(BigDecimal.ZERO) <= 0) {
+                        throw new IllegalArgumentException(
+                                        "El total del pedido debe ser mayor que cero.");
+                }
+
+                pedido.setTotal(total);
+
+                // Guardar el pedido en la base de datos
+                Pedido guardado = pedidoRepository.saveAndFlush(pedido);
+
+                // Descontar del inventario las unidades compradas
+                for (DetallePedido detalle : guardado.getDetalles()) {
+
+                        productosInventarioClient.descontarStock(
+                                        detalle.getProductoId(),
+                                        detalle.getCantidad());
+                }
+
+                return convertirAResponse(guardado);
         }
 
-        pedido.setTotal(total);
+        // LISTAR TODOS LOS PEDIDOS
+        @Transactional(readOnly = true)
+        public List<PedidoResponse> listarPedidos() {
 
-        Pedido guardado = pedidoRepository.saveAndFlush(pedido);
-
-        return convertirAResponse(guardado);
-    }
-
-    // LISTAR TODOS LOS PEDIDOS
-    @Transactional(readOnly = true)
-    public List<PedidoResponse> listarPedidos() {
-
-        return pedidoRepository.findAll()
-                .stream()
-                .map(this::convertirAResponse)
-                .toList();
-    }
-
-    // BUSCAR PEDIDO POR ID
-    @Transactional(readOnly = true)
-    public PedidoResponse obtenerPedidoPorId(Long id) {
-
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() ->
-                        new RecursoNoEncontradoException(
-                                "No se encontró el pedido con ID " + id
-                        )
-                );
-
-        return convertirAResponse(pedido);
-    }
-
-    // LISTAR PEDIDOS DE UN USUARIO
-    @Transactional(readOnly = true)
-    public List<PedidoResponse> listarPedidosPorUsuario(Long usuarioId) {
-
-        return pedidoRepository.findByUsuarioId(usuarioId)
-                .stream()
-                .map(this::convertirAResponse)
-                .toList();
-    }
-
-    // ACTUALIZAR ESTADO DEL PEDIDO
-    @Transactional
-    public PedidoResponse actualizarEstado(Long id, String nuevoEstado) {
-
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() ->
-                        new RecursoNoEncontradoException(
-                                "No se encontró el pedido con ID " + id
-                        )
-                );
-
-        if (nuevoEstado == null || nuevoEstado.isBlank()) {
-            throw new IllegalArgumentException(
-                    "El estado del pedido es obligatorio."
-            );
+                return pedidoRepository.findAll()
+                                .stream()
+                                .map(this::convertirAResponse)
+                                .toList();
         }
 
-        String estado = nuevoEstado.trim().toUpperCase();
+        // BUSCAR PEDIDO POR ID
+        @Transactional(readOnly = true)
+        public PedidoResponse obtenerPedidoPorId(Long id) {
 
-        Map<String, Set<String>> transicionesPermitidas = Map.of(
-                "PENDIENTE",
-                Set.of("EN_PREPARACION", "CANCELADO"),
+                Pedido pedido = pedidoRepository.findById(id)
+                                .orElseThrow(() -> new RecursoNoEncontradoException(
+                                                "No se encontró el pedido con ID " + id));
 
-                "EN_PREPARACION",
-                Set.of("DESPACHADO", "CANCELADO"),
-
-                "DESPACHADO",
-                Set.of("ENTREGADO"),
-
-                "ENTREGADO",
-                Set.of(),
-
-                "CANCELADO",
-                Set.of()
-        );
-
-        String estadoActual = pedido.getEstado();
-
-        if (!transicionesPermitidas.containsKey(estadoActual)) {
-            throw new IllegalArgumentException(
-                    "El pedido tiene un estado actual no válido."
-            );
+                return convertirAResponse(pedido);
         }
 
-        if (estadoActual.equals(estado)) {
-            return convertirAResponse(pedido);
+        // LISTAR PEDIDOS DE UN USUARIO
+        @Transactional(readOnly = true)
+        public List<PedidoResponse> listarPedidosPorUsuario(Long usuarioId) {
+
+                return pedidoRepository.findByUsuarioId(usuarioId)
+                                .stream()
+                                .map(this::convertirAResponse)
+                                .toList();
         }
 
-        if (!transicionesPermitidas.get(estadoActual).contains(estado)) {
-            throw new IllegalArgumentException(
-                    "No se puede cambiar el estado de " +
-                    estadoActual + " a " + estado + "."
-            );
+        // ACTUALIZAR ESTADO DEL PEDIDO
+        @Transactional
+        public PedidoResponse actualizarEstado(Long id, String nuevoEstado) {
+
+                Pedido pedido = pedidoRepository.findById(id)
+                                .orElseThrow(() -> new RecursoNoEncontradoException(
+                                                "No se encontró el pedido con ID " + id));
+
+                if (nuevoEstado == null || nuevoEstado.isBlank()) {
+                        throw new IllegalArgumentException(
+                                        "El estado del pedido es obligatorio.");
+                }
+
+                String estado = nuevoEstado.trim().toUpperCase();
+
+                Map<String, Set<String>> transicionesPermitidas = Map.of(
+                                "PENDIENTE",
+                                Set.of("EN_PREPARACION", "CANCELADO"),
+
+                                "EN_PREPARACION",
+                                Set.of("DESPACHADO", "CANCELADO"),
+
+                                "DESPACHADO",
+                                Set.of("ENTREGADO"),
+
+                                "ENTREGADO",
+                                Set.of(),
+
+                                "CANCELADO",
+                                Set.of());
+
+                String estadoActual = pedido.getEstado();
+
+                if (!transicionesPermitidas.containsKey(estadoActual)) {
+                        throw new IllegalArgumentException(
+                                        "El pedido tiene un estado actual no válido.");
+                }
+
+                if (estadoActual.equals(estado)) {
+                        return convertirAResponse(pedido);
+                }
+
+                if (!transicionesPermitidas.get(estadoActual).contains(estado)) {
+                        throw new IllegalArgumentException(
+                                        "No se puede cambiar el estado de " +
+                                                        estadoActual + " a " + estado + ".");
+                }
+
+                // Si se cancela el pedido, devolver los productos al inventario
+                if ("CANCELADO".equals(estado)) {
+
+                        for (DetallePedido detalle : pedido.getDetalles()) {
+
+                                productosInventarioClient.reponerStock(
+                                                detalle.getProductoId(),
+                                                detalle.getCantidad());
+                        }
+                }
+
+                pedido.setEstado(estado);
+
+                Pedido actualizado = pedidoRepository.save(pedido);
+
+                return convertirAResponse(actualizado);
         }
 
-        pedido.setEstado(estado);
+        // ELIMINAR PEDIDO
+        @Transactional
+        public void eliminarPedido(Long id) {
+                actualizarEstado(id, "CANCELADO");
+        }
 
-        Pedido actualizado = pedidoRepository.save(pedido);
+        // CONVERTIR PEDIDO A DTO DE RESPUESTA
+        private PedidoResponse convertirAResponse(Pedido pedido) {
 
-        return convertirAResponse(actualizado);
-    }
-    
-    // ELIMINAR PEDIDO
-    @Transactional
-    public void eliminarPedido(Long id) {
+                List<DetallePedidoResponse> detalles = pedido.getDetalles()
+                                .stream()
+                                .map(this::convertirDetalleAResponse)
+                                .toList();
 
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() ->
-                        new RecursoNoEncontradoException(
-                                "No se encontró el pedido con ID " + id
-                        )
-                );
+                return new PedidoResponse(
+                                pedido.getId(),
+                                pedido.getUsuarioId(),
+                                pedido.getNombreCliente(),
+                                pedido.getDireccionEntrega(),
+                                pedido.getTotal(),
+                                pedido.getEstado(),
+                                pedido.getFechaCreacion(),
+                                detalles);
+        }
 
-        pedidoRepository.delete(pedido);
-    }
+        // CONVERTIR DETALLE A DTO DE RESPUESTA
+        private DetallePedidoResponse convertirDetalleAResponse(
+                        DetallePedido detalle) {
 
-    // CONVERTIR PEDIDO A DTO DE RESPUESTA
-    private PedidoResponse convertirAResponse(Pedido pedido) {
-
-        List<DetallePedidoResponse> detalles = pedido.getDetalles()
-                .stream()
-                .map(this::convertirDetalleAResponse)
-                .toList();
-
-        return new PedidoResponse(
-                pedido.getId(),
-                pedido.getUsuarioId(),
-                pedido.getNombreCliente(),
-                pedido.getDireccionEntrega(),
-                pedido.getTotal(),
-                pedido.getEstado(),
-                pedido.getFechaCreacion(),
-                detalles
-        );
-    }
-
-    // CONVERTIR DETALLE A DTO DE RESPUESTA
-    private DetallePedidoResponse convertirDetalleAResponse(
-            DetallePedido detalle) {
-
-        return new DetallePedidoResponse(
-                detalle.getId(),
-                detalle.getProductoId(),
-                detalle.getCantidad(),
-                detalle.getPrecioUnitario(),
-                detalle.getSubtotal()
-        );
-    }
+                return new DetallePedidoResponse(
+                                detalle.getId(),
+                                detalle.getProductoId(),
+                                detalle.getCantidad(),
+                                detalle.getPrecioUnitario(),
+                                detalle.getSubtotal());
+        }
 }
