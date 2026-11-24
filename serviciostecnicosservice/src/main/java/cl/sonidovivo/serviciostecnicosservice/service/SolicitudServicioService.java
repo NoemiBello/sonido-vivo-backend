@@ -44,6 +44,7 @@ public class SolicitudServicioService {
     // el id, el estado inicial y la fecha.
     public SolicitudServicio crear(SolicitudServicio solicitud) {
         validarInstrumento(solicitud.getInstrumento());
+        validarDescripcion(solicitud.getDescripcion());
         solicitud.setId(null);
         solicitud.setCorreo(solicitud.getCorreo().trim().toLowerCase());
         solicitud.setEstado("PENDIENTE");
@@ -55,6 +56,7 @@ public class SolicitudServicioService {
     // El estado y la fecha no se cambian aquí: el estado tiene su propio flujo.
     public SolicitudServicio actualizar(Long id, SolicitudServicio datos) {
         validarInstrumento(datos.getInstrumento());
+        validarDescripcion(datos.getDescripcion());
         SolicitudServicio actual = buscar(id);
         actual.setNombre(datos.getNombre());
         actual.setCorreo(datos.getCorreo().trim().toLowerCase());
@@ -109,5 +111,12 @@ public class SolicitudServicioService {
         }
         throw new DatosInvalidosException(
             "Instrumento no atendido: use guitarra-electrica, guitarra-acustica, bajo u otro");
+    }
+
+    // La columna admite 500 caracteres: se avisa con un 400 antes de llegar a la base.
+    private void validarDescripcion(String descripcion) {
+        if (descripcion.length() > 500) {
+            throw new DatosInvalidosException("La descripción no puede superar los 500 caracteres");
+        }
     }
 }
