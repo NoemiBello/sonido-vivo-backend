@@ -12,7 +12,7 @@ Plataforma de comercio electrónico especializada en instrumentos musicales, acc
 ![JWT](https://img.shields.io/badge/Security-JWT-333333?logo=jsonwebtokens)
 ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
 ![AWS](https://img.shields.io/badge/AWS-EC2-FF9900?logo=amazonaws&logoColor=white)
-![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-yellow)
+![Estado](https://img.shields.io/badge/Estado-Desarrollo%20completado-brightgreen)
 
 ---
 
@@ -22,11 +22,11 @@ Sonido Vivo es una plataforma de comercio electrónico orientada a la comerciali
 
 Este repositorio concentra los servicios backend de la plataforma, diseñados mediante una arquitectura de microservicios independientes desarrollados con Spring Boot.
 
-La solución contempla la implementación de API REST, persistencia de datos, lógica de negocio, validación de información, autenticación mediante JSON Web Tokens (JWT), autorización basada en roles y documentación de endpoints mediante Swagger.
+La solución está estructurada en API REST con persistencia de datos, lógica de negocio, validaciones, autenticación mediante JSON Web Tokens (JWT), autorización basada en roles y documentación de endpoints mediante Swagger.
 
-El frontend se desarrolla de forma independiente utilizando React y Vite, estableciendo comunicación con los servicios backend mediante solicitudes HTTP e intercambio de información en formato JSON.
+El frontend se desarrolló de forma independiente con React y Vite, para comunicarse con los servicios backend mediante solicitudes HTTP e intercambio de información en formato JSON.
 
-El proyecto se desarrolla de manera incremental, incorporando progresivamente los microservicios, sus pruebas y la integración con el frontend.
+El desarrollo del backend reúne los nueve microservicios definidos por el equipo. Se completó y verificó localmente la integración básica entre Productos, Inventario y Pedidos, incluida la actualización de existencias al crear o cancelar compras. Las verificaciones finales de integración general y despliegue se gestionan por separado.
 
 ---
 
@@ -55,9 +55,9 @@ Desarrollar una plataforma web Full Stack que permita gestionar las operaciones 
 
 ## 3. Arquitectura del sistema
 
-Sonido Vivo contempla una arquitectura compuesta por nueve microservicios Spring Boot, organizados dentro de un repositorio backend común.
+Sonido Vivo utiliza una arquitectura compuesta por nueve microservicios Spring Boot, organizados dentro de un repositorio backend común.
 
-Cada microservicio dispone de su propio proyecto Maven, configuración, responsabilidades funcionales y esquema de base de datos.
+Cada microservicio cuenta con su propio proyecto Maven, configuración, responsabilidades funcionales y esquema de base de datos.
 
 ### Diagrama general de arquitectura
 
@@ -89,7 +89,7 @@ flowchart TD
     H -. Gestión de existencias .-> G
 ```
 
-El diagrama representa la arquitectura objetivo del proyecto. Las comunicaciones entre microservicios serán verificadas durante la integración.
+El diagrama resume la arquitectura del backend. La comunicación entre Pedidos, Productos e Inventario se verificó mediante pruebas locales con Swagger; otras integraciones se documentan según su evidencia disponible.
 
 ### Principios de arquitectura
 
@@ -108,9 +108,9 @@ El diagrama representa la arquitectura objetivo del proyecto. Las comunicaciones
 
 ## 4. Microservicios
 
-La plataforma contempla los siguientes nueve microservicios:
+El backend está organizado en los siguientes nueve microservicios:
 
-| Microservicio | Puerto | Base de datos prevista | Responsabilidad |
+| Microservicio | Puerto | Base de datos | Responsabilidad |
 |---|---:|---|---|
 | Auth Service | 8081 | sonidovivo_auth | Autenticación, generación y renovación de JWT. |
 | Usuarios Service | 8082 | sonidovivo_usuarios | Registro, perfiles y administración de usuarios. |
@@ -131,7 +131,7 @@ La plataforma contempla los siguientes nueve microservicios:
 | Servidor HTTP Nginx | 80 |
 | Servidor HTTPS Nginx | 443 |
 
-Los nombres y configuraciones de los servicios pendientes podrán ajustarse durante la integración definitiva.
+Los puertos y nombres aquí indicados corresponden a la organización de servicios definida para el proyecto.
 
 ---
 
@@ -183,7 +183,7 @@ Los nombres y configuraciones de los servicios pendientes podrán ajustarse dura
 - GitHub.
 - Maven Wrapper.
 
-### Infraestructura prevista
+### Infraestructura de despliegue
 
 - Amazon Web Services (AWS).
 - Amazon EC2.
@@ -198,7 +198,7 @@ Las versiones específicas de las dependencias se encuentran definidas en el arc
 
 ## 6. Estructura del repositorio
 
-La estructura objetivo del repositorio backend es la siguiente:
+La estructura del repositorio backend es la siguiente:
 
 ```text
 sonido-vivo-backend/
@@ -259,6 +259,7 @@ contactoservice/
 | Model | Definición de entidades y atributos del dominio. |
 | Repository | Acceso y persistencia de información. |
 | Service | Implementación de lógica y reglas de negocio. |
+| Client | Comunicación HTTP con las API de otros microservicios. |
 | Controller | Exposición de endpoints REST. |
 | Exception | Gestión centralizada de errores y excepciones. |
 | Config | Configuración de seguridad, JWT, CORS y Swagger. |
@@ -295,7 +296,7 @@ Los microservicios utilizan el protocolo HTTP y el formato JSON para intercambia
 
 ### Recursos principales
 
-Las siguientes rutas representan los contratos previstos de integración, sujetos a confirmación mediante los controladores de cada servicio.
+Las siguientes rutas identifican los recursos REST principales de los microservicios. Los métodos disponibles y sus permisos deben consultarse en Swagger de cada servicio.
 
 | Microservicio | Ruta base |
 |---|---|
@@ -313,7 +314,7 @@ Las siguientes rutas representan los contratos previstos de integración, sujeto
 
 Responsable de la autenticación y seguridad de los usuarios.
 
-Funcionalidades previstas:
+Funciones del servicio:
 
 - Inicio de sesión.
 - Validación de credenciales.
@@ -327,7 +328,7 @@ Funcionalidades previstas:
 
 Responsable de la administración de usuarios de la plataforma.
 
-Funcionalidades previstas:
+Funciones del servicio:
 
 - Registro de usuarios.
 - Consulta de perfiles.
@@ -339,7 +340,7 @@ Funcionalidades previstas:
 
 Responsable de gestionar las solicitudes de asistencia técnica relacionadas con instrumentos musicales.
 
-Funcionalidades previstas:
+Funciones del servicio:
 
 - Registro de solicitudes.
 - Consulta de solicitudes.
@@ -351,7 +352,7 @@ Funcionalidades previstas:
 
 Responsable de administrar el catálogo comercial de Sonido Vivo.
 
-Funcionalidades previstas:
+Funciones del servicio:
 
 - Registro de productos.
 - Consulta del catálogo.
@@ -364,7 +365,7 @@ Funcionalidades previstas:
 
 Responsable de organizar y clasificar los productos.
 
-Funcionalidades previstas:
+Funciones del servicio:
 
 - Creación de categorías.
 - Consulta de categorías.
@@ -376,7 +377,7 @@ Funcionalidades previstas:
 
 Responsable del control de existencias.
 
-Funcionalidades previstas:
+Funciones del servicio:
 
 - Registro de existencias.
 - Consulta de stock.
@@ -389,7 +390,7 @@ Funcionalidades previstas:
 
 Responsable de gestionar las operaciones de compra de los clientes.
 
-Funcionalidades previstas:
+Funciones del servicio:
 
 - Creación de pedidos.
 - Registro de detalles del pedido.
@@ -400,7 +401,7 @@ Funcionalidades previstas:
 - Asociación de pedidos con usuarios autenticados.
 - Administración de pedidos.
 
-Reglas de negocio previstas:
+Reglas de negocio:
 
 - Validación de cantidades solicitadas.
 - Verificación de disponibilidad de productos.
@@ -413,7 +414,7 @@ Reglas de negocio previstas:
 
 Responsable de administrar el contenido informativo de Sonido Vivo.
 
-Funcionalidades previstas:
+Funciones del servicio:
 
 - Creación de publicaciones.
 - Consulta de publicaciones.
@@ -509,7 +510,7 @@ Los tokens permiten identificar al usuario autenticado y controlar el acceso a l
 | USER | Cliente autenticado con permisos limitados. |
 | Público | Visitante sin autenticación. |
 
-### Flujo de autenticación previsto
+### Flujo de autenticación
 
 ```mermaid
 sequenceDiagram
@@ -551,7 +552,7 @@ Authorization: Bearer <token>
 
 Contacto Service cuenta con validación JWT y restricciones de acceso implementadas y probadas localmente.
 
-La emisión y renovación de tokens mediante Auth Service se verificarán durante la integración general.
+La validación de JWT se ha utilizado en pruebas locales. La emisión, renovación y continuidad de sesión de Auth deben comprobarse en las pruebas integrales del sistema.
 
 ### Códigos de respuesta de seguridad
 
@@ -610,7 +611,7 @@ Asignación de permisos para desarrollo:
 
 ```sql
 GRANT ALL PRIVILEGES
-ON `sonidovivo\_contacto`.*
+ON `sonidovivo_contacto`.*
 TO 'contacto_app'@'localhost';
 
 FLUSH PRIVILEGES;
@@ -782,7 +783,20 @@ También se verificó la persistencia de información después de reiniciar el b
 
 Las pruebas anteriores corresponden a verificaciones manuales ejecutadas sobre Contacto Service.
 
-### Pruebas de integración previstas
+### Integración verificada: Pedidos, Productos e Inventario
+
+Se comprobaron localmente las siguientes operaciones mediante Swagger:
+
+- Creación de categoría y producto para pruebas de compra.
+- Registro y consulta de existencias de inventario.
+- Creación de un pedido con respuesta HTTP **201**, total calculado y estado `PENDIENTE`.
+- Descuento automático de **1 unidad** de stock al registrar el pedido (de 9 a 8).
+- Cancelación del pedido mediante `PATCH`, con reposición automática de **1 unidad** (de 8 a 9).
+- Rechazo por stock insuficiente con respuesta HTTP **400** y mensaje explicativo.
+
+Las pruebas anteriores acreditan el flujo funcional básico, no la consistencia distribuida ante fallos, concurrencia o pedidos con múltiples productos.
+
+### Pruebas de integración y validaciones finales
 
 - Comunicación entre React y las API REST.
 - Autenticación de usuarios.
@@ -795,7 +809,7 @@ Las pruebas anteriores corresponden a verificaciones manuales ejecutadas sobre C
 - Consistencia entre productos, inventario y pedidos.
 - Funcionamiento de la aplicación desplegada.
 
-Las evidencias serán incorporadas progresivamente en la documentación técnica del proyecto.
+Las evidencias de pruebas locales y de integración se registran en la documentación técnica correspondiente.
 
 ---
 
@@ -865,7 +879,7 @@ Las variables `VITE_*` son accesibles desde el navegador y no deben contener con
 
 La arquitectura contempla el despliegue de Sonido Vivo mediante servicios de Amazon Web Services (AWS).
 
-### Infraestructura prevista
+### Infraestructura de despliegue
 
 - Amazon EC2.
 - Sistema operativo Ubuntu.
@@ -875,7 +889,7 @@ La arquitectura contempla el despliegue de Sonido Vivo mediante servicios de Ama
 - systemd para administrar los procesos backend.
 - Configuración de seguridad mediante grupos de seguridad.
 
-### Arquitectura de despliegue
+### Arquitectura propuesta para despliegue
 
 ```mermaid
 flowchart TD
@@ -901,7 +915,7 @@ flowchart TD
 - Dimensionamiento de recursos de memoria y CPU.
 - Separación de configuraciones de desarrollo y producción.
 
-La infraestructura definitiva estará sujeta a pruebas de funcionamiento y capacidad.
+La puesta en producción requiere verificar configuración, disponibilidad, conectividad y capacidad de la infraestructura.
 
 ---
 
@@ -991,11 +1005,11 @@ Este README constituye la documentación técnica general del repositorio backen
 
 ## Estado del proyecto
 
-La plataforma se encuentra en desarrollo incremental.
+El equipo completó el desarrollo de la estructura backend de Sonido Vivo, con nueve microservicios distribuidos por dominio funcional y sus correspondientes proyectos Spring Boot.
 
-Contacto Service dispone de implementación backend, conexión a base de datos, operaciones CRUD, validaciones, seguridad JWT, autorización por roles y pruebas manuales verificadas mediante Swagger y Postman.
+Se realizaron pruebas locales de Contacto Service y se verificó la integración funcional entre **Productos, Inventario y Pedidos**: consulta de productos y existencias, registro de pedidos, descuento automático de stock, cancelación con reposición y rechazo de compras con stock insuficiente.
 
-Los demás microservicios, la integración general con el frontend y el despliegue en AWS se incorporarán progresivamente conforme al plan de desarrollo del equipo.
+**Estado:** desarrollo backend completado para la entrega académica, con ajustes y verificaciones finales pendientes. La validación integral de todos los servicios con React y la comprobación del despliegue en AWS deben registrarse como completadas únicamente cuando se hayan probado.
 
 ---
 
