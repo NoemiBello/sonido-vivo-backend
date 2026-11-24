@@ -34,6 +34,9 @@ public class UsuarioService {
         if (repository.findByCorreoIgnoreCase(usuario.getCorreo()).isPresent()) {
             throw new DatosInvalidosException("El correo ya tiene datos registrados");
         }
+        // El id lo asigna la base de datos: si llegara uno en el JSON,
+        // save() modificaría la ficha de otra persona en vez de crear una nueva.
+        usuario.setId(null);
         usuario.setCorreo(usuario.getCorreo().trim().toLowerCase());
         return repository.save(usuario);
     }
