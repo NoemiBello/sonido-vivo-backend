@@ -182,6 +182,25 @@ public class PedidoService {
                                 .toList();
         }
 
+        // ACTUALIZAR DATOS DE ENTREGA (solo mientras está pendiente)
+        @Transactional
+        public PedidoResponse actualizarPedido(Long id, ActualizarPedidoRequest request) {
+
+            Pedido pedido = pedidoRepository.findById(id)
+                    .orElseThrow(() -> new RecursoNoEncontradoException(
+                            "No se encontró el pedido con ID " + id));
+
+            if (!"PENDIENTE".equals(pedido.getEstado())) {
+                throw new IllegalArgumentException(
+                        "Solo se puede modificar un pedido pendiente.");
+            }
+
+            pedido.setNombreCliente(request.nombreCliente());
+            pedido.setDireccionEntrega(request.direccionEntrega());
+
+            return convertirAResponse(pedidoRepository.save(pedido));
+        }
+
         // ACTUALIZAR ESTADO DEL PEDIDO
         @Transactional
         public PedidoResponse actualizarEstado(Long id, String nuevoEstado) {

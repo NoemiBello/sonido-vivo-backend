@@ -56,6 +56,14 @@ public class InventarioController {
     return service.porProducto(productoId);
   }
 
+  @PostMapping("/producto/{productoId}/salidas")
+  @Operation(
+      summary = "Descontar stock por una compra",
+      security = @SecurityRequirement(name = "bearerAuth"))
+  public Inventario salida(@PathVariable Long productoId, @Valid @RequestBody MovimientoRequest d) {
+    return service.salida(productoId, d);
+  }
+
   @PostMapping("/producto/{productoId}/movimientos")
   @Operation(
       summary = "Entrada positiva o salida negativa de stock",
