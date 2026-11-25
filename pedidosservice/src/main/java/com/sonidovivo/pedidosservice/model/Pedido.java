@@ -26,6 +26,10 @@ public class Pedido {
     @Column(name = "usuario_id", nullable = false)
     private Long usuarioId;
 
+    // Dueño del pedido: correo del JWT de quien compró
+    @Column(name = "correo_cliente", updatable = false)
+    private String correoCliente;
+
     @NotBlank(message = "El nombre del cliente es obligatorio")
     @Size(max = 100)
     @Column(name = "nombre_cliente", nullable = false, length = 100)

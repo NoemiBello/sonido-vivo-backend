@@ -18,6 +18,12 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
   }
 
+  @ExceptionHandler(AccesoDenegadoException.class)
+  ResponseEntity<Map<String, String>> accesoDenegado(AccesoDenegadoException e) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+      .body(Map.of("error", e.getMessage()));
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   ResponseEntity<Map<String, String>> datosInvalidos(MethodArgumentNotValidException e) {
     String mensaje = e.getBindingResult().getFieldErrors().stream()
