@@ -42,30 +42,30 @@ public class SecurityConfig {
                         .permitAll()
 
                         // El cliente ve su historial de compras
-                        .requestMatchers(HttpMethod.GET, "/api/pedidos/usuario/*")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/pedidos/usuario/*")
                         .hasAnyRole("USER", "ADMIN")
 
                         // El vendedor solo ve la lista y el detalle (Anexo 1)
-                        .requestMatchers(HttpMethod.GET, "/api/pedidos")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/pedidos")
                         .hasAnyRole("VENDEDOR", "ADMIN")
 
-                        .requestMatchers(HttpMethod.GET, "/api/pedidos/**")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/pedidos/**")
                         .hasAnyRole("VENDEDOR", "ADMIN")
 
                         // El cliente confirma su compra
-                        .requestMatchers(HttpMethod.POST, "/api/pedidos")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/pedidos")
                         .hasAnyRole("USER", "ADMIN")
 
                         // Solo ADMIN puede modificar los datos de entrega
-                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/*")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/pedidos/*")
                         .hasRole("ADMIN")
 
                         // Solo ADMIN puede actualizar estados
-                        .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/pedidos/*/estado")
                         .hasRole("ADMIN")
 
                         // Solo ADMIN puede eliminar pedidos
-                        .requestMatchers(HttpMethod.DELETE, "/api/pedidos/*")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/pedidos/*")
                         .hasRole("ADMIN")
 
                         .anyRequest().denyAll()

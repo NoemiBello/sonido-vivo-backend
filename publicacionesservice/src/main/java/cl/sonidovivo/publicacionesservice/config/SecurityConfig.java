@@ -70,26 +70,26 @@ public class SecurityConfig {
                         // CONSULTAS PUBLICAS
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/publicaciones",
-                                "/api/publicaciones/**")
+                                "/api/v1/publicaciones",
+                                "/api/v1/publicaciones/**")
                         .permitAll()
 
                         // CREACION EXCLUSIVA DE ADMINISTRADORES
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/publicaciones")
+                                "/api/v1/publicaciones")
                         .hasRole("ADMIN")
 
                         // ACTUALIZACION EXCLUSIVA DE ADMINISTRADORES
                         .requestMatchers(
                                 HttpMethod.PUT,
-                                "/api/publicaciones/**")
+                                "/api/v1/publicaciones/**")
                         .hasRole("ADMIN")
 
                         // ELIMINACION EXCLUSIVA DE ADMINISTRADORES
                         .requestMatchers(
                                 HttpMethod.DELETE,
-                                "/api/publicaciones/**")
+                                "/api/v1/publicaciones/**")
                         .hasRole("ADMIN")
 
                         .anyRequest().denyAll())

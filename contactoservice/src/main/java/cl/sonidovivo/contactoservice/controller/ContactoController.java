@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/contactos")
+@RequestMapping("/api/v1/contactos")
 public class ContactoController {
 
     private final ContactoService service;

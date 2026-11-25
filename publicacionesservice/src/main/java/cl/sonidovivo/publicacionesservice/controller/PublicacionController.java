@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/publicaciones")
+@RequestMapping("/api/v1/publicaciones")
 public class PublicacionController {
 
     private final PublicacionService publicacionService;
