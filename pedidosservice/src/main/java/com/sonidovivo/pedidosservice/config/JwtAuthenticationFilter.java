@@ -47,7 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String rol = claims.get("rol", String.class);
 
                 if (correo != null && !correo.isBlank()
-                        && ("ADMIN".equals(rol) || "USER".equals(rol))) {
+                        && ("ADMIN".equals(rol) || "USER".equals(rol)
+                                || "VENDEDOR".equals(rol))) {
 
                     var autenticacion =
                             new UsernamePasswordAuthenticationToken(
