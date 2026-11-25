@@ -22,7 +22,7 @@ public class SecurityConfig {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         .requestMatchers("/swagger-ui/**", "/swagger-ui.html",
-          "/v3/api-docs/**").permitAll()
+          "/v3/api-docs/**", "/error").permitAll()
         // Público: el formulario de la página Servicios no exige iniciar sesión
         .requestMatchers(HttpMethod.POST, "/api/v1/servicios-tecnicos").permitAll()
         // Con sesión iniciada: el cliente consulta el estado de sus solicitudes

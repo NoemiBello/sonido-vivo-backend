@@ -22,7 +22,7 @@ public class SecurityConfig {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         .requestMatchers("/swagger-ui/**", "/swagger-ui.html",
-          "/v3/api-docs/**").permitAll()
+          "/v3/api-docs/**", "/error").permitAll()
         // Cualquier usuario con token: consultar sus datos, crearlos al
         // registrarse y editarlos desde su perfil
         .requestMatchers(HttpMethod.GET, "/api/v1/usuarios/correo/**").authenticated()
