@@ -122,9 +122,9 @@ public class ProductosInventarioClient {
 
         try {
             InventarioResponse inventario = inventarioClient.post()
-                    .uri("/producto/{id}/movimientos", productoId)
+                    .uri("/producto/{id}/salidas", productoId)
                     .header("Authorization", autorizacion)
-                    .body(Map.of("cantidad", -cantidad))
+                    .body(Map.of("cantidad", cantidad))
                     .retrieve()
                     .body(InventarioResponse.class);
 

@@ -67,6 +67,14 @@ public class InventarioService {
     repo.delete(i);
   }
 
+  // Compra de un cliente: solo puede descontar, nunca aumentar el stock.
+  @Transactional
+  public Inventario salida(Long productoId, MovimientoRequest d) {
+    if (d.cantidad() <= 0)
+      throw new ApiException(HttpStatus.BAD_REQUEST, "La cantidad debe ser mayor que cero.");
+    return mover(productoId, new MovimientoRequest(-d.cantidad()));
+  }
+
   @Transactional
   public Inventario mover(Long productoId, MovimientoRequest d) {
     cliente.obtenerPorId(productoId);

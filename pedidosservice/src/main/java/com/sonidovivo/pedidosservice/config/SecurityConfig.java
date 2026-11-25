@@ -41,15 +41,20 @@ public class SecurityConfig {
                                 "/v3/api-docs/**")
                         .permitAll()
 
-                        // Permisos temporales para pruebas de integración
+                        // El cliente ve su historial de compras
+                        .requestMatchers(HttpMethod.GET, "/api/pedidos/usuario/*")
+                        .hasAnyRole("USER", "ADMIN")
+
+                        // El vendedor solo ve la lista y el detalle (Anexo 1)
                         .requestMatchers(HttpMethod.GET, "/api/pedidos")
-                        .hasRole("ADMIN")
+                        .hasAnyRole("VENDEDOR", "ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/api/pedidos/**")
-                        .hasRole("ADMIN")
+                        .hasAnyRole("VENDEDOR", "ADMIN")
 
+                        // El cliente confirma su compra
                         .requestMatchers(HttpMethod.POST, "/api/pedidos")
-                        .hasRole("ADMIN")
+                        .hasAnyRole("USER", "ADMIN")
 
                         // Solo ADMIN puede actualizar estados
                         .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado")
