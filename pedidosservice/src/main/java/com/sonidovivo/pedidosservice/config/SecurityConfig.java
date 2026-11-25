@@ -56,6 +56,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/pedidos")
                         .hasAnyRole("USER", "ADMIN")
 
+                        // Solo ADMIN puede modificar los datos de entrega
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/*")
+                        .hasRole("ADMIN")
+
                         // Solo ADMIN puede actualizar estados
                         .requestMatchers(HttpMethod.PATCH, "/api/pedidos/*/estado")
                         .hasRole("ADMIN")
