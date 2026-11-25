@@ -34,11 +34,12 @@ public class PedidoService {
 
         // CREAR PEDIDO
         @Transactional
-        public PedidoResponse crearPedido(CrearPedidoRequest request) {
+        public PedidoResponse crearPedido(CrearPedidoRequest request, String correo) {
 
                 Pedido pedido = new Pedido();
 
                 pedido.setUsuarioId(request.usuarioId());
+                pedido.setCorreoCliente(correo);
                 pedido.setNombreCliente(request.nombreCliente());
                 pedido.setDireccionEntrega(request.direccionEntrega());
                 pedido.setEstado("PENDIENTE");
@@ -174,10 +175,14 @@ public class PedidoService {
 
         // LISTAR PEDIDOS DE UN USUARIO
         @Transactional(readOnly = true)
-        public List<PedidoResponse> listarPedidosPorUsuario(Long usuarioId) {
+        public List<PedidoResponse> listarPedidosPorUsuario(
+                        Long usuarioId, String correo, boolean esAdmin) {
 
                 return pedidoRepository.findByUsuarioId(usuarioId)
                                 .stream()
+                                // El cliente solo ve los pedidos hechos con su cuenta
+                                .filter(pedido -> esAdmin
+                                                || correo.equals(pedido.getCorreoCliente()))
                                 .map(this::convertirAResponse)
                                 .toList();
         }

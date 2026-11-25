@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,9 +29,10 @@ public class PedidoController {
     // Crear un nuevo pedido
     @PostMapping
     public ResponseEntity<PedidoResponse> crearPedido(
-            @Valid @RequestBody CrearPedidoRequest request) {
+            @Valid @RequestBody CrearPedidoRequest request,
+            Authentication auth) {
 
-        PedidoResponse pedido = pedidoService.crearPedido(request);
+        PedidoResponse pedido = pedidoService.crearPedido(request, auth.getName());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -58,10 +61,15 @@ public class PedidoController {
     // Consultar los pedidos de un usuario
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<PedidoResponse>> listarPorUsuario(
-            @PathVariable Long usuarioId) {
+            @PathVariable Long usuarioId,
+            Authentication auth) {
+
+        boolean esAdmin = auth.getAuthorities()
+                .contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         return ResponseEntity.ok(
-                pedidoService.listarPedidosPorUsuario(usuarioId)
+                pedidoService.listarPedidosPorUsuario(
+                        usuarioId, auth.getName(), esAdmin)
         );
     }
 
