@@ -64,21 +64,21 @@ public class SecurityConfig {
                     .permitAll()
 
                     .requestMatchers(
-                            HttpMethod.POST, "/api/contactos")
+                            HttpMethod.POST, "/api/v1/contactos")
                     .permitAll()
 
                     .requestMatchers(
                             HttpMethod.GET,
-                            "/api/contactos",
-                            "/api/contactos/**")
+                            "/api/v1/contactos",
+                            "/api/v1/contactos/**")
                     .hasRole("ADMIN")
 
                     .requestMatchers(
-                            HttpMethod.PUT, "/api/contactos/**")
+                            HttpMethod.PUT, "/api/v1/contactos/**")
                     .hasRole("ADMIN")
 
                     .requestMatchers(
-                            HttpMethod.DELETE, "/api/contactos/**")
+                            HttpMethod.DELETE, "/api/v1/contactos/**")
                     .hasRole("ADMIN")
 
                     .anyRequest().denyAll())

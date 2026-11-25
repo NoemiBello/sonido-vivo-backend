@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/inventario")
+@RequestMapping("/api/v1/inventario")
 public class InventarioController {
   private final InventarioService service;
 
@@ -35,7 +35,7 @@ public class InventarioController {
   @Operation(summary = "Crear registro", security = @SecurityRequirement(name = "bearerAuth"))
   public ResponseEntity<Inventario> crear(@Valid @RequestBody InventarioRequest d) {
     var result = service.guardar(null, d);
-    return ResponseEntity.created(URI.create("/api/inventario/" + result.getId())).body(result);
+    return ResponseEntity.created(URI.create("/api/v1/inventario/" + result.getId())).body(result);
   }
 
   @PutMapping("/{id}")

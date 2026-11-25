@@ -1,6 +1,7 @@
 
 package com.sonidovivo.pedidosservice.controller;
 
+import com.sonidovivo.pedidosservice.dto.ActualizarPedidoRequest;
 import com.sonidovivo.pedidosservice.dto.CrearPedidoRequest;
 import com.sonidovivo.pedidosservice.dto.PedidoResponse;
 import com.sonidovivo.pedidosservice.service.PedidoService;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/pedidos")
+@RequestMapping("/api/v1/pedidos")
 public class PedidoController {
 
     private final PedidoService pedidoService;
@@ -61,6 +62,17 @@ public class PedidoController {
 
         return ResponseEntity.ok(
                 pedidoService.listarPedidosPorUsuario(usuarioId)
+        );
+    }
+
+    // Actualizar los datos de entrega de un pedido
+    @PutMapping("/{id}")
+    public ResponseEntity<PedidoResponse> actualizarPedido(
+            @PathVariable Long id,
+            @Valid @RequestBody ActualizarPedidoRequest request) {
+
+        return ResponseEntity.ok(
+                pedidoService.actualizarPedido(id, request)
         );
     }
 
