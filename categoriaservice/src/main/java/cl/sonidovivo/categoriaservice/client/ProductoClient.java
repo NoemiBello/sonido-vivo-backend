@@ -15,7 +15,7 @@ public class ProductoClient {
   public boolean tieneProductosPorCategoria(Long categoriaId) {
     try {
       Boolean existe = webClient.get()
-          .uri(builder -> builder.path("/api/productos/existe").queryParam("categoriaId", categoriaId).build())
+          .uri(builder -> builder.path("/api/v1/productos/existe").queryParam("categoriaId", categoriaId).build())
           .retrieve().bodyToMono(Boolean.class).block(Duration.ofSeconds(5));
       if (existe == null) throw new IllegalStateException("Respuesta vacía de Productos");
       return existe;

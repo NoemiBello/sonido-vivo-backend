@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/v1/productos")
 public class ProductoController {
   private final ProductoService service;
 
@@ -41,7 +41,7 @@ public class ProductoController {
   @Operation(summary = "Crear registro", security = @SecurityRequirement(name = "bearerAuth"))
   public ResponseEntity<Producto> crear(@Valid @RequestBody ProductoRequest d) {
     var result = service.guardar(null, d);
-    return ResponseEntity.created(URI.create("/api/productos/" + result.getId())).body(result);
+    return ResponseEntity.created(URI.create("/api/v1/productos/" + result.getId())).body(result);
   }
 
   @PutMapping("/{id}")

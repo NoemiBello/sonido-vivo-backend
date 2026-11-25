@@ -14,7 +14,7 @@ public class CategoriaClient {
 
   public CategoriaDTO obtenerPorId(Long id) {
     try {
-      CategoriaDTO datos = webClient.get().uri("/api/categorias/{id}", id)
+      CategoriaDTO datos = webClient.get().uri("/api/v1/categorias/{id}", id)
           .retrieve().bodyToMono(CategoriaDTO.class).block(Duration.ofSeconds(5));
       if (datos == null || datos.id() == null) throw new IllegalStateException("Respuesta vacía");
       return datos;

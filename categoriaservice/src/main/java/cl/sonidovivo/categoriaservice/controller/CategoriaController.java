@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/categorias")
+@RequestMapping("/api/v1/categorias")
 public class CategoriaController {
   private final CategoriaService service;
 
@@ -35,7 +35,7 @@ public class CategoriaController {
   @Operation(summary = "Crear registro", security = @SecurityRequirement(name = "bearerAuth"))
   public ResponseEntity<Categoria> crear(@Valid @RequestBody CategoriaRequest d) {
     var result = service.guardar(null, d);
-    return ResponseEntity.created(URI.create("/api/categorias/" + result.getId())).body(result);
+    return ResponseEntity.created(URI.create("/api/v1/categorias/" + result.getId())).body(result);
   }
 
   @PutMapping("/{id}")

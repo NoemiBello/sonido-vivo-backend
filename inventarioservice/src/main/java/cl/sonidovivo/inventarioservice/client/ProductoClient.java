@@ -14,7 +14,7 @@ public class ProductoClient {
 
   public ProductoDTO obtenerPorId(Long id) {
     try {
-      ProductoDTO datos = webClient.get().uri("/api/productos/{id}", id)
+      ProductoDTO datos = webClient.get().uri("/api/v1/productos/{id}", id)
           .retrieve().bodyToMono(ProductoDTO.class).block(Duration.ofSeconds(5));
       if (datos == null || datos.id() == null) throw new IllegalStateException("Respuesta vacía");
       return datos;
