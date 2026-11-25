@@ -37,6 +37,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errores);
     }
 
+    // Productos o Inventario no respondieron, o el stock se agotó al comprar
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, String>> servicioNoDisponible(
+            IllegalStateException ex) {
+
+        return ResponseEntity.badRequest()
+                .body(Map.of("error", ex.getMessage()));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> datosInvalidos(
             IllegalArgumentException ex) {
