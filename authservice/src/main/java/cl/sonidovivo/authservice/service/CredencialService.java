@@ -50,16 +50,24 @@ public class CredencialService {
 
   public CredencialResponse actualizar(Long id, ActualizarCredencialRequest request) {
     Usuario usuario = obtener(id);
-    usuario.setRol(validarRol(request.rol()));
+    String rol = validarRol(request.rol());
+    boolean activo = usuario.isActivo();
     if (request.activo() != null) {
-      usuario.setActivo(request.activo());
+      activo = request.activo();
     }
+    // Si deja de ser un administrador activo, debe quedar otro en el sistema.
+    if (!rol.equals("ADMIN") || !activo) {
+      validarUltimoAdministrador(usuario);
+    }
+    usuario.setRol(rol);
+    usuario.setActivo(activo);
     return aRespuesta(usuarios.save(usuario));
   }
 
   // No se borra el registro: se desactiva y ya no puede iniciar sesión.
   public void desactivar(Long id) {
     Usuario usuario = obtener(id);
+    validarUltimoAdministrador(usuario);
     usuario.setActivo(false);
     usuarios.save(usuario);
   }
@@ -67,6 +75,22 @@ public class CredencialService {
   private Usuario obtener(Long id) {
     return usuarios.findById(id).orElseThrow(() ->
       new RecursoNoEncontradoException("Usuario no encontrado: " + id));
+  }
+
+  // Regla de negocio: el sistema no puede quedar sin administradores activos.
+  private void validarUltimoAdministrador(Usuario usuario) {
+    if (!usuario.getRol().equals("ADMIN") || !usuario.isActivo()) {
+      return;
+    }
+    int administradores = 0;
+    for (Usuario otro : usuarios.findAll()) {
+      if (otro.getRol().equals("ADMIN") && otro.isActivo()) {
+        administradores++;
+      }
+    }
+    if (administradores == 1) {
+      throw new DatosInvalidosException("Debe quedar al menos un administrador activo");
+    }
   }
 
   private String validarRol(String rol) {
