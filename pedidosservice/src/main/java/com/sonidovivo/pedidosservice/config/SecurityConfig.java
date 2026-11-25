@@ -38,7 +38,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**")
+                                "/v3/api-docs/**",
+                                "/error")
                         .permitAll()
 
                         // El cliente ve su historial de compras

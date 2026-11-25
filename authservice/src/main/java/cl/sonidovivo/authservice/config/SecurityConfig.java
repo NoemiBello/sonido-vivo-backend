@@ -28,7 +28,7 @@ public class SecurityConfig {
       .authorizeHttpRequests(auth -> auth
         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
         .requestMatchers("/swagger-ui/**", "/swagger-ui.html",
-          "/v3/api-docs/**").permitAll()
+          "/v3/api-docs/**", "/error").permitAll()
         // Públicos: todavía no se tiene token (o se viene a renovarlo)
         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login",
           "/api/v1/auth/registro", "/api/v1/auth/refresh").permitAll()
