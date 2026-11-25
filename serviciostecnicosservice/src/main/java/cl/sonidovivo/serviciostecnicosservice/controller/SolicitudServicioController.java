@@ -1,12 +1,15 @@
 package cl.sonidovivo.serviciostecnicosservice.controller;
 
 import cl.sonidovivo.serviciostecnicosservice.dto.CambioEstadoRequest;
+import cl.sonidovivo.serviciostecnicosservice.exception.AccesoDenegadoException;
 import cl.sonidovivo.serviciostecnicosservice.model.SolicitudServicio;
 import cl.sonidovivo.serviciostecnicosservice.service.SolicitudServicioService;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +34,8 @@ public class SolicitudServicioController {
     @GetMapping("/{id}") public SolicitudServicio buscar(@PathVariable Long id) { return service.buscar(id); }
 
     @GetMapping("/correo/{correo}")
-    public List<SolicitudServicio> buscarPorCorreo(@PathVariable String correo) {
+    public List<SolicitudServicio> buscarPorCorreo(@PathVariable String correo, Authentication auth) {
+        validarPropietario(correo, auth);
         return service.buscarPorCorreo(correo);
     }
 
@@ -54,5 +58,15 @@ public class SolicitudServicioController {
     public SolicitudServicio cambiarEstado(@PathVariable Long id,
         @Valid @RequestBody CambioEstadoRequest request) {
         return service.cambiarEstado(id, request);
+    }
+
+    // Privacidad: cada usuario accede solo a sus datos y el ADMIN, a todos.
+    // La identidad viene del JWT, la registró JwtAuthenticationFilter.
+    private void validarPropietario(String correo, Authentication auth) {
+        boolean esAdmin = auth.getAuthorities()
+            .contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        if (!esAdmin && !auth.getName().equalsIgnoreCase(correo)) {
+            throw new AccesoDenegadoException("Solo puedes acceder a tus propios datos");
+        }
     }
 }

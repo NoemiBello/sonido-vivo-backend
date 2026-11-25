@@ -303,12 +303,12 @@ Las siguientes rutas identifican los recursos REST principales de los microservi
 | Auth | `/api/v1/auth` |
 | Usuarios | `/api/v1/usuarios` |
 | Servicios Técnicos | `/api/v1/servicios-tecnicos` |
-| Productos | `/api/productos` |
-| Categorías | `/api/categorias` |
-| Inventario | `/api/inventario` |
-| Pedidos | `/api/pedidos` |
-| Publicaciones | `/api/publicaciones` |
-| Contacto | `/api/contactos` |
+| Productos | `/api/v1/productos` |
+| Categorías | `/api/v1/categorias` |
+| Inventario | `/api/v1/inventario` |
+| Pedidos | `/api/v1/pedidos` |
+| Publicaciones | `/api/v1/publicaciones` |
+| Contacto | `/api/v1/contactos` |
 
 ### 7.1. Auth Service
 
@@ -441,11 +441,11 @@ Responsable de recibir y administrar los mensajes enviados por los usuarios medi
 
 | Método | Endpoint | Acceso | Respuesta |
 |---|---|---|---|
-| GET | `/api/contactos` | ADMIN | 200 OK |
-| GET | `/api/contactos/{id}` | ADMIN | 200 OK |
-| POST | `/api/contactos` | Público | 201 Created |
-| PUT | `/api/contactos/{id}` | ADMIN | 200 OK |
-| DELETE | `/api/contactos/{id}` | ADMIN | 204 No Content |
+| GET | `/api/v1/contactos` | ADMIN | 200 OK |
+| GET | `/api/v1/contactos/{id}` | ADMIN | 200 OK |
+| POST | `/api/v1/contactos` | Público | 201 Created |
+| PUT | `/api/v1/contactos/{id}` | ADMIN | 200 OK |
+| DELETE | `/api/v1/contactos/{id}` | ADMIN | 204 No Content |
 
 #### Modelo de datos
 
@@ -878,7 +878,7 @@ La configuración de URL de las API se realiza mediante variables de entorno de 
 Ejemplo:
 
 ```env
-VITE_CONTACTO_API_URL=http://localhost:8089/api/contactos
+VITE_CONTACTO_API_URL=http://localhost:8089/api/v1/contactos
 ```
 
 Las variables `VITE_*` son accesibles desde el navegador y no deben contener contraseñas ni claves privadas.
